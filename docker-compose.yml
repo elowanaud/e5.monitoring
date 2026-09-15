@@ -3,6 +3,10 @@ services:
     image: prom/prometheus:latest
     # ports:
     #   - "9090:9090"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
     volumes:
       - ./config:/config:ro
       - prometheus_data:/prometheus
@@ -13,6 +17,10 @@ services:
     image: grafana/grafana:latest
     # ports:
       # - "3000:3000"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
@@ -23,6 +31,8 @@ services:
     image: prom/node-exporter:latest
     # ports:
     #   - "9100:9100"
+    deploy:
+      mode: global
     command:
       - "--path.procfs=/host/proc"
       - "--path.sysfs=/host/sys"
