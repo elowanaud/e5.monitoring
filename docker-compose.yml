@@ -37,7 +37,7 @@ services:
 
   cadvisor:
     container_name: cadvisor
-    image: ghcr.io/google/cadvisor:latest
+    image: google/cadvisor:latest
     # ports:
     #   - "8080:8080"
     deploy:
