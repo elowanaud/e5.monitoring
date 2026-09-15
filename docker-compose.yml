@@ -1,5 +1,6 @@
 services:
   prometheus:
+    user: "0:0"
     image: prom/prometheus:latest
     # ports:
     #   - "9090:9090"
