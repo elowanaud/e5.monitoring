@@ -16,6 +16,34 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
 
+  node_exporter:
+    image: prom/node-exporter:latest
+    # ports:
+    #   - "9100:9100"
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    deploy:
+      mode: global
+    volumes:
+      - '/:/host:ro,rslave'
+
+  cadvisor:
+    image: google/cadvisor:latest
+    # ports:
+    #   - "8080:8080"
+    deploy:
+      mode: global
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+
+
 volumes:
   prometheus_data:
   grafana_data:
