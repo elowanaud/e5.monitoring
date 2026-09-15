@@ -1,5 +1,6 @@
 services:
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:latest
     # ports:
     #   - "9090:9090"
@@ -14,6 +15,7 @@ services:
       - "--config.file=/config/prometheus.yml"
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:latest
     # ports:
       # - "3000:3000"
@@ -22,6 +24,7 @@ services:
 
   node_exporter:
     image: prom/node-exporter:latest
+    container_name: node_exporter
     # ports:
     #   - "9100:9100"
     command:
@@ -33,7 +36,8 @@ services:
       - '/:/host:ro,rslave'
 
   cadvisor:
-    image: google/cadvisor:latest
+    container_name: cadvisor
+    image: ghcr.io/google/cadvisor:0.60.5
     # ports:
     #   - "8080:8080"
     deploy:
@@ -42,7 +46,6 @@ services:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     devices:
