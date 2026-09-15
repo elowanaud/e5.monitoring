@@ -10,6 +10,7 @@ services:
     volumes:
       - ./config:/config:ro
       - prometheus_data:/prometheus
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
       - "--config.file=/config/prometheus.yml"
 
@@ -24,16 +25,25 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./config/grafana/dashboard-definitions:/var/lib/grafana/dashboards:ro
 
   node_exporter:
     image: prom/node-exporter:latest
     # ports:
     #   - "9100:9100"
-    pid: host
     deploy:
       mode: global
+    # networks:
+    #   - hostnet
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/host/root"
     volumes:
-      - '/:/host:ro,rslave'
+      - '/proc:/host/proc:ro'
+      - '/sys:/host/sys:ro'
+      - '/:/host/root:ro,rslave'
 
   # cadvisor:
   #   image: google/cadvisor:latest
@@ -60,3 +70,10 @@ services:
 volumes:
   prometheus_data:
   grafana_data:
+
+# networks:
+#   default:
+#     driver: overlay
+#   hostnet:
+#     external: true
+#     name: host

@@ -1,14 +1,30 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'node_exporter'
-    dns_sd_configs:
-      - names: ['tasks.node_exporter']
-        type: 'A'
+    dockerswarm_sd_configs:
+      - host: 'unix:///var/run/docker.sock'
+        role: nodes
         port: 9100
+        refresh_interval: 15s
+    relabel_configs:
+      - source_labels: ['__meta_dockerswarm_node_hostname']
+        target_label: swarm_node
+      - source_labels: ['__meta_dockerswarm_node_id']
+        target_label: swarm_node_id
+      - source_labels: ['__meta_dockerswarm_node_role']
+        target_label: swarm_role
+      - source_labels: ['__meta_dockerswarm_node_availability']
+        target_label: swarm_availability
+      - source_labels: ['__meta_dockerswarm_node_status']
+        target_label: swarm_status
 
-  - job_name: 'cadvisor'
-    static_configs:
-      - targets: ['cadvisor:8080']
+  # - job_name: 'cadvisor'
+  #   static_configs:
+  #     - targets: ['cadvisor:8080']
