@@ -9,6 +9,7 @@ services:
           - node.role == manager
     volumes:
       - ./config:/config:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - prometheus_data:/prometheus
     command:
       - "--config.file=/config/prometheus.yml"
