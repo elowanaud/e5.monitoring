@@ -1,6 +1,5 @@
 services:
   prometheus:
-    container_name: prometheus
     image: prom/prometheus:latest
     # ports:
     #   - "9090:9090"
@@ -8,6 +7,11 @@ services:
       placement:
         constraints:
           - node.role == manager
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
     volumes:
       - ./config:/config:ro
       - prometheus_data:/prometheus
@@ -15,17 +19,21 @@ services:
       - "--config.file=/config/prometheus.yml"
 
   grafana:
-    container_name: grafana
     image: grafana/grafana:latest
     # ports:
       # - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
 
   node_exporter:
     image: prom/node-exporter:latest
-    container_name: node_exporter
     # ports:
     #   - "9100:9100"
     command:
@@ -33,24 +41,34 @@ services:
     pid: host
     deploy:
       mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
     volumes:
       - '/:/host:ro,rslave'
 
-  # cadvisor:
-  #   container_name: cadvisor
-  #   image: google/cadvisor:latest
-  #   # ports:
-  #   #   - "8080:8080"
-  #   deploy:
-  #     mode: global
-  #   volumes:
-  #     - /:/rootfs:ro
-  #     - /var/run:/var/run:ro
-  #     - /sys:/sys:ro
-  #     - /var/lib/docker/:/var/lib/docker:ro
-  #     - /dev/disk/:/dev/disk:ro
-  #   devices:
-  #     - /dev/kmsg
+  cadvisor:
+    image: google/cadvisor:latest
+    # ports:
+    #   - "8080:8080"
+    deploy:
+      mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    command: 
+      - -logtostderr
+      - -docker_only
 
 
 volumes:
