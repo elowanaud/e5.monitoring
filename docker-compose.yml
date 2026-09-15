@@ -23,6 +23,9 @@ services:
     # ports:
       # - "3000:3000"
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       resources:
         limits:
           memory: 128M
