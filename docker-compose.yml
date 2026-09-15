@@ -3,6 +3,10 @@ services:
     image: prom/prometheus:latest
     # ports:
     #   - "9090:9090"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
     volumes:
       - ./config:/config:ro
       - prometheus_data:/prometheus
@@ -38,6 +42,7 @@ services:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     devices:
