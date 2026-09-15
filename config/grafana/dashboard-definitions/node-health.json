@@ -41,7 +41,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Latest Prometheus scrape status for each Swarm node.",
+      "description": "Latest Prometheus scrape status for each monitored node.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -112,7 +112,7 @@
           "editorMode": "code",
           "expr": "up{job=\"node_exporter\", instance=~\"$node\"}",
           "instant": true,
-          "legendFormat": "{{swarm_node}} · {{instance}}",
+          "legendFormat": "{{instance}}",
           "range": false,
           "refId": "A"
         }
