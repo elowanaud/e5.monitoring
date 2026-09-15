@@ -36,7 +36,7 @@ services:
     deploy:
       mode: global
     networks:
-      - node
+      - hostnet
     command:
       - "--path.procfs=/host/proc"
       - "--path.sysfs=/host/sys"
@@ -73,5 +73,6 @@ volumes:
   grafana_data:
 
 networks:
-  node:
+  hostnet:
     external: true
+    name: host
