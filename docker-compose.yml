@@ -35,21 +35,21 @@ services:
     volumes:
       - '/:/host:ro,rslave'
 
-  cadvisor:
-    container_name: cadvisor
-    image: google/cadvisor:latest
-    # ports:
-    #   - "8080:8080"
-    deploy:
-      mode: global
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    devices:
-      - /dev/kmsg
+  # cadvisor:
+  #   container_name: cadvisor
+  #   image: google/cadvisor:latest
+  #   # ports:
+  #   #   - "8080:8080"
+  #   deploy:
+  #     mode: global
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
+  #   devices:
+  #     - /dev/kmsg
 
 
 volumes:
