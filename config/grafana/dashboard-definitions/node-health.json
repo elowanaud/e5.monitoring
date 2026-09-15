@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Health and resource overview for all nodes scraped by node_exporter.",
+  "description": "Role-aware health and resource overview for Docker Swarm nodes scraped by node_exporter.",
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -41,7 +41,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Latest Prometheus scrape status for each monitored node.",
+      "description": "Current Prometheus scrape status for Swarm manager nodes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -76,7 +76,8 @@
                 "value": 1
               }
             ]
-          }
+          },
+          "noValue": "No nodes"
         },
         "overrides": []
       },
@@ -110,14 +111,99 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "up{job=\"node_exporter\", instance=~\"$node\"}",
+          "expr": "up{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"manager\"}",
           "instant": true,
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{swarm_node}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Node status",
+      "title": "Node status — Managers",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Current Prometheus scrape status for Swarm worker nodes.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 0,
+                  "text": "DOWN"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 1,
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "noValue": "No nodes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 20,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "up{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"worker\"}",
+          "instant": true,
+          "legendFormat": "{{swarm_node}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Node status — Workers",
       "type": "stat"
     },
     {
@@ -157,9 +243,9 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4,
-        "x": 12,
-        "y": 1
+        "w": 8,
+        "x": 0,
+        "y": 6
       },
       "id": 3,
       "options": {
@@ -225,9 +311,9 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4,
-        "x": 16,
-        "y": 1
+        "w": 8,
+        "x": 8,
+        "y": 6
       },
       "id": 4,
       "options": {
@@ -293,9 +379,9 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4,
-        "x": 20,
-        "y": 1
+        "w": 8,
+        "x": 16,
+        "y": 6
       },
       "id": 5,
       "options": {
@@ -332,110 +418,12 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "Identity and operating system version reported by each reachable node.",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 6
-      },
-      "id": 6,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "Node"
-          }
-        ]
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Node inventory",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "Value": true,
-              "__name__": true,
-              "domainname": true,
-              "job": true,
-              "swarm_availability": true,
-              "swarm_node": true,
-              "swarm_node_id": true,
-              "swarm_role": true,
-              "swarm_status": true
-            },
-            "indexByName": {
-              "nodename": 0,
-              "instance": 1,
-              "sysname": 2,
-              "release": 3,
-              "machine": 4,
-              "version": 5
-            },
-            "renameByName": {
-              "instance": "Target",
-              "machine": "Architecture",
-              "nodename": "Node",
-              "release": "Kernel",
-              "sysname": "OS",
-              "version": "Version"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 11
       },
       "id": 7,
       "panels": [],
@@ -447,7 +435,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Percentage of CPU time not spent idle, averaged across all cores.",
+      "description": "Current CPU usage for online Swarm manager nodes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -473,15 +461,16 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percent",
+          "noValue": "No nodes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 12,
         "x": 0,
-        "y": 14
+        "y": 12
       },
       "id": 8,
       "options": {
@@ -507,14 +496,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "((100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$node\", mode=\"idle\"}[$__rate_interval])))) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\"} == 1)",
+          "expr": "((100 * (1 - avg by (instance, swarm_node) (rate(node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"manager\", mode=\"idle\"}[$__rate_interval])))) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"manager\"} == 1))",
           "instant": true,
-          "legendFormat": "{{nodename}}",
+          "legendFormat": "{{swarm_node}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "CPU usage",
+      "title": "CPU usage — Managers",
       "type": "stat"
     },
     {
@@ -522,7 +511,83 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Memory in use, calculated from MemAvailable.",
+      "description": "Current CPU usage for online Swarm worker nodes.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent",
+          "noValue": "No nodes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "id": 21,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "((100 * (1 - avg by (instance, swarm_node) (rate(node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"worker\", mode=\"idle\"}[$__rate_interval])))) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"worker\"} == 1))",
+          "instant": true,
+          "legendFormat": "{{swarm_node}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "CPU usage — Workers",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Current memory usage for online Swarm manager nodes, calculated from MemAvailable.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -548,15 +613,16 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percent",
+          "noValue": "No nodes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 6,
-        "y": 14
+        "w": 12,
+        "x": 0,
+        "y": 18
       },
       "id": 9,
       "options": {
@@ -582,14 +648,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "((100 * (1 - (node_memory_MemAvailable_bytes{job=\"node_exporter\", instance=~\"$node\"} / node_memory_MemTotal_bytes{job=\"node_exporter\", instance=~\"$node\"}))) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\"} == 1)",
+          "expr": "(100 * (1 - (node_memory_MemAvailable_bytes{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"manager\"} / node_memory_MemTotal_bytes{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"manager\"}))) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"manager\"} == 1)",
           "instant": true,
-          "legendFormat": "{{nodename}}",
+          "legendFormat": "{{swarm_node}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Memory usage",
+      "title": "Memory usage — Managers",
       "type": "stat"
     },
     {
@@ -597,7 +663,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Usage of the fullest filesystem on each node.",
+      "description": "Current memory usage for online Swarm worker nodes, calculated from MemAvailable.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -623,17 +689,18 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percent",
+          "noValue": "No nodes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
+        "w": 12,
         "x": 12,
-        "y": 14
+        "y": 18
       },
-      "id": 10,
+      "id": 22,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
@@ -657,14 +724,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(max by (instance) (100 * (1 - (node_filesystem_avail_bytes{job=\"node_exporter\", instance=~\"$node\", fstype!~\"^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tmpfs|tracefs)$\", mountpoint!~\"^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/kubelet/.+)($|/)\"} / node_filesystem_size_bytes{job=\"node_exporter\", instance=~\"$node\", fstype!~\"^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tmpfs|tracefs)$\", mountpoint!~\"^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/kubelet/.+)($|/)\"}))) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\"} == 1)",
+          "expr": "(100 * (1 - (node_memory_MemAvailable_bytes{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"worker\"} / node_memory_MemTotal_bytes{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"worker\"}))) and on (instance) (up{job=\"node_exporter\", instance=~\"$node\", swarm_role=\"worker\"} == 1)",
           "instant": true,
-          "legendFormat": "{{nodename}}",
+          "legendFormat": "{{swarm_node}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Fullest filesystem",
+      "title": "Memory usage — Workers",
       "type": "stat"
     },
     {
@@ -693,10 +760,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 14
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 24
       },
       "id": 11,
       "options": {
@@ -738,7 +805,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 29
       },
       "id": 12,
       "panels": [],
@@ -815,7 +882,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 30
       },
       "id": 13,
       "options": {
@@ -922,7 +989,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 30
       },
       "id": 14,
       "options": {
@@ -957,468 +1024,6 @@
         }
       ],
       "title": "Memory utilization",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "System load average divided by the number of logical CPUs. A value of 100% means one runnable task per core.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 12,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 1,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 100
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 30
-      },
-      "id": 15,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "(100 * node_load1{job=\"node_exporter\", instance=~\"$node\"} / on (instance) count by (instance) (node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$node\", mode=\"idle\"})) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · 1 min",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "(100 * node_load5{job=\"node_exporter\", instance=~\"$node\"} / on (instance) count by (instance) (node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$node\", mode=\"idle\"})) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · 5 min",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "(100 * node_load15{job=\"node_exporter\", instance=~\"$node\"} / on (instance) count by (instance) (node_cpu_seconds_total{job=\"node_exporter\", instance=~\"$node\", mode=\"idle\"})) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · 15 min",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "Load per CPU core",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 1,
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 75
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 30
-      },
-      "id": 16,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "(100 * (1 - (node_filesystem_avail_bytes{job=\"node_exporter\", instance=~\"$node\", fstype!~\"^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tmpfs|tracefs)$\", mountpoint!~\"^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/kubelet/.+)($|/)\"} / node_filesystem_size_bytes{job=\"node_exporter\", instance=~\"$node\", fstype!~\"^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tmpfs|tracefs)$\", mountpoint!~\"^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/kubelet/.+)($|/)\"}))) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · {{mountpoint}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Filesystem usage",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 39
-      },
-      "id": 17,
-      "panels": [],
-      "title": "I/O",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 12,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "Bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 40
-      },
-      "id": 18,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum by (instance) (rate(node_network_receive_bytes_total{job=\"node_exporter\", instance=~\"$node\", device!~\"^(lo|docker.*|veth.*|br-.*)$\"}[$__rate_interval])) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · RX",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum by (instance) (rate(node_network_transmit_bytes_total{job=\"node_exporter\", instance=~\"$node\", device!~\"^(lo|docker.*|veth.*|br-.*)$\"}[$__rate_interval])) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · TX",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Network throughput",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 12,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "Bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 40
-      },
-      "id": 19,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum by (instance) (rate(node_disk_read_bytes_total{job=\"node_exporter\", instance=~\"$node\", device!~\"^(loop|ram|fd|sr|zram|dm-).*\"}[$__rate_interval])) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · read",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum by (instance) (rate(node_disk_written_bytes_total{job=\"node_exporter\", instance=~\"$node\", device!~\"^(loop|ram|fd|sr|zram|dm-).*\"}[$__rate_interval])) * on (instance) group_left (nodename) node_uname_info{job=\"node_exporter\", instance=~\"$node\"}",
-          "instant": false,
-          "legendFormat": "{{nodename}} · write",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Disk throughput",
       "type": "timeseries"
     }
   ],
@@ -1496,6 +1101,6 @@
   "timezone": "browser",
   "title": "Node Health",
   "uid": "node-health-overview",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

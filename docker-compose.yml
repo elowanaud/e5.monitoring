@@ -46,27 +46,6 @@ services:
       - '/sys:/host/sys:ro'
       - '/:/host/root:ro,rslave'
 
-  # cadvisor:
-  #   image: google/cadvisor:latest
-  #   # ports:
-  #   #   - "8080:8080"
-  #   deploy:
-  #     mode: global
-  #     resources:
-  #       limits:
-  #         memory: 128M
-  #       reservations:
-  #         memory: 64M
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /:/rootfs:ro
-  #     - /var/run:/var/run
-  #     - /sys:/sys:ro
-  #     - /var/lib/docker/:/var/lib/docker:ro
-  #   command: 
-  #     - -logtostderr
-  #     - -docker_only
-
 
 volumes:
   prometheus_data:
