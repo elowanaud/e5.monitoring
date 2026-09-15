@@ -35,6 +35,8 @@ services:
     #   - "9100:9100"
     deploy:
       mode: global
+    networks:
+      - node
     command:
       - "--path.procfs=/host/proc"
       - "--path.sysfs=/host/sys"
@@ -69,3 +71,7 @@ services:
 volumes:
   prometheus_data:
   grafana_data:
+
+networks:
+  node:
+    external: true
