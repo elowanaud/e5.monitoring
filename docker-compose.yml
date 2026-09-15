@@ -5,6 +5,7 @@ services:
     #   - "9090:9090"
     volumes:
       - prometheus_data:/prometheus
+      - ./config:/config
     command:
       - "--config.file=/config/prometheus.yml"
 
