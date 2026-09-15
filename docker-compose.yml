@@ -34,8 +34,8 @@ services:
     #   - "9100:9100"
     deploy:
       mode: global
-    # networks:
-    #   - hostnet
+    networks:
+      - hostnet
     command:
       - "--path.procfs=/host/proc"
       - "--path.sysfs=/host/sys"
@@ -71,9 +71,7 @@ volumes:
   prometheus_data:
   grafana_data:
 
-# networks:
-#   default:
-#     driver: overlay
-#   hostnet:
-#     external: true
-#     name: host
+networks:
+  hostnet:
+    external: true
+    name: host
