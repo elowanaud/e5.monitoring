@@ -18,6 +18,9 @@ services:
     # ports:
       # - "3000:3000"
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
