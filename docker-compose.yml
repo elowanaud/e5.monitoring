@@ -21,6 +21,7 @@ services:
       # - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources:ro
 
   node_exporter:
     image: prom/node-exporter:latest
